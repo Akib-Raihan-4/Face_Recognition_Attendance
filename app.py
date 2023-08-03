@@ -32,9 +32,31 @@ def markAttendance(name, date):
             dtString = now.strftime('%H:%M:%S')
             f.writelines(f'\n{name},{dtString}')
 
+def marked_faces(name, date):
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
+    file_name = f'Attendance_Folder/Attendance_{current_date}.csv'
+
+    if not os.path.exists(file_name):
+        return "Not Marked"
+
+    else:
+        with open(file_name, 'r+') as f:
+            myDataList = f.readlines()
+            nameList = []
+
+            for line in myDataList:
+                entry = line.split(',')
+                nameList.append(entry[0])
+
+            if name not in nameList:
+                return "Not Marked"
+            else:
+                return "Marked"
+
 def recognize_faces():
     success, img = cap.read()
-    imgS = cv2.resize(img, (0, 0), None, 0.25, 0.25)
+    imgS = cv2.resize(img, (0, 0), None, 1, 1)
     imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
 
     faceCurFrame = face_recognition.face_locations(imgS)
@@ -49,13 +71,19 @@ def recognize_faces():
         if matches[matchIndex]:
             name = classNames[matchIndex].upper()
             y1, x2, y2, x1 = faceLoc
-            y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
+            y1, x2, y2, x1 = y1 , x2 , y2 , x1 
+
+            current_date = datetime.now().strftime('%Y-%m-%d')
+
+            marked = marked_faces(name,current_date)
 
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0, 255, 0), cv2.FILLED)
-            cv2.putText(img, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
-            current_date = datetime.now().strftime('%Y-%m-%d')
+            # cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0, 255, 0),2)
+            cv2.putText(img, marked, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_COMPLEX, 2, (245, 123, 26), 2)
+            
             markAttendance(name, current_date)
+            
+            print(name)
 
     imgtk = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     imgtk = ImageTk.PhotoImage(image=Image.fromarray(imgtk))
