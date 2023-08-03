@@ -31,7 +31,6 @@ def markAttendance(name, date):
             now = datetime.now()
             dtString = now.strftime('%H:%M:%S')
             f.writelines(f'\n{name},{dtString}')
-
 def marked_faces(name, date):
     current_date = datetime.now().strftime('%Y-%m-%d')
 
@@ -53,7 +52,6 @@ def marked_faces(name, date):
                 return "Not Marked"
             else:
                 return "Marked"
-
 def recognize_faces():
     success, img = cap.read()
     imgS = cv2.resize(img, (0, 0), None, 1, 1)
@@ -97,9 +95,9 @@ def start_attendance():
     recognize_faces()
 
 def stop_attendance():
-    global cap
-    if cap is not None:
-        cap.release()
+    # global cap
+    # if cap is not None:
+    #     cap.release()
     app.quit()
 
 classNames_file = "classNames.pkl"
